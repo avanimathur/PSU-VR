@@ -86,6 +86,7 @@ updateNameSpace.on('connection', (socket) => {
     // future initialization logic
   });
 
+
   socket.on('updatePlayer', (player) => {
     const u = socket.userData;
     u.position = player.position;
