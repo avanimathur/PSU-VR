@@ -1,138 +1,136 @@
-import express from "express";
-import path from "path";
-import http from "http";
-import { Server } from "socket.io";
+import express from 'express';
+import path from 'path';
+import http from 'http';
+import { Server } from 'socket.io';
+import { fileURLToPath } from 'url';
 
-const port = process.env.PORT || 3000;
+// Fix __dirname for ES modules
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
+// Create express app and HTTP server
 const app = express();
 const server = http.createServer(app);
 const io = new Server(server, {
-    cors: {
-        origin: "*",
-        methods: "*",
-    },
+  cors: {
+    origin: '*',
+    methods: '*',
+  },
 });
 
-app.use(express.static("dist"));
+// Serve static files from frontend/dist
+app.use(express.static(path.join(__dirname, 'frontend', 'dist')));
 
-const indexPath = path.join(process.cwd(), "dist", "index.html");
-
-app.get("*", (req, res) => {
-    res.sendFile(indexPath);
+// Fallback to index.html for SPA routes
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname, 'frontend', 'dist', 'index.html'));
 });
 
-// Chat Name Space ----------------------------------------
+const PORT = process.env.PORT || 3000;
 
-const chatNameSpace = io.of("/chat");
+// ---- Chat Namespace ----
+const chatNameSpace = io.of('/chat');
 
-chatNameSpace.on("connection", (socket) => {
-    socket.userData = {
-        name: "",
-    };
-    console.log(`${socket.id} has connected to chat namespace`);
+chatNameSpace.on('connection', (socket) => {
+  socket.userData = { name: '' };
+  console.log(`${socket.id} connected to /chat`);
 
-    socket.on("disconnect", () => {
-        console.log(`${socket.id} has disconnected`);
-    });
+  socket.on('setName', (name) => {
+    socket.userData.name = name;
+  });
 
-    socket.on("setName", (name) => {
-        socket.userData.name = name;
-    });
+  socket.on('send-message', (message, time) => {
+    socket.broadcast.emit('recieved-message', socket.userData.name, message, time);
+  });
 
-    socket.on("send-message", (message, time) => {
-        socket.broadcast.emit(
-            "recieved-message",
-            socket.userData.name,
-            message,
-            time
-        );
-    });
+  socket.on('disconnect', () => {
+    console.log(`${socket.id} disconnected from /chat`);
+  });
 });
 
-// Update Name Space ----------------------------------------
-const updateNameSpace = io.of("/update");
-
+// ---- Update Namespace ----
+const updateNameSpace = io.of('/update');
 const connectedSockets = new Map();
 
-updateNameSpace.on("connection", (socket) => {
-    socket.userData = {
-        position: { x: 0, y: -500, z: -500 },
-        quaternion: { x: 0, y: 0, z: 0, w: 0 },
-        animation: "idle",
-        name: "",
-        avatarSkin: "",
+updateNameSpace.on('connection', (socket) => {
+  socket.userData = {
+    position: { x: 0, y: -500, z: -500 },
+    quaternion: { x: 0, y: 0, z: 0, w: 0 },
+    animation: 'idle',
+    name: '',
+    avatarSkin: '',
+  };
+
+  connectedSockets.set(socket.id, socket);
+  console.log(`${socket.id} connected to /update`);
+
+  socket.on('setID', () => {
+    updateNameSpace.emit('setID', socket.id);
+  });
+
+  socket.on('setName', (name) => {
+    socket.userData.name = name;
+  });
+
+  socket.on('setAvatar', (avatarSkin) => {
+    updateNameSpace.emit('setAvatarSkin', avatarSkin, socket.id);
+  });
+
+  socket.on('disconnect', () => {
+    console.log(`${socket.id} disconnected`);
+    connectedSockets.delete(socket.id);
+    updateNameSpace.emit('removePlayer', socket.id);
+  });
+
+  socket.on('initPlayer', (player) => {
+    // future initialization logic
+  });
+
+  socket.on('updatePlayer', (player) => {
+    const u = socket.userData;
+    u.position = player.position;
+    u.quaternion = {
+      x: player.quaternion[0],
+      y: player.quaternion[1],
+      z: player.quaternion[2],
+      w: player.quaternion[3],
     };
-    connectedSockets.set(socket.id, socket);
+    u.animation = player.animation;
+    u.avatarSkin = player.avatarSkin;
+  });
 
-    console.log(`${socket.id} has connected to update namespace`);
+  setInterval(() => {
+    if (
+      socket.userData.name === '' ||
+      socket.userData.avatarSkin === ''
+    ) return;
 
-    socket.on("setID", () => {
-        updateNameSpace.emit("setID", socket.id);
-    });
+    const playerData = [];
 
-    socket.on("setName", (name) => {
-        socket.userData.name = name;
-    });
+    for (const s of connectedSockets.values()) {
+      const u = s.userData;
+      if (u.name && u.avatarSkin) {
+        playerData.push({
+          id: s.id,
+          name: u.name,
+          position_x: u.position.x,
+          position_y: u.position.y,
+          position_z: u.position.z,
+          quaternion_x: u.quaternion.x,
+          quaternion_y: u.quaternion.y,
+          quaternion_z: u.quaternion.z,
+          quaternion_w: u.quaternion.w,
+          animation: u.animation,
+          avatarSkin: u.avatarSkin,
+        });
+      }
+    }
 
-    socket.on("setAvatar", (avatarSkin) => {
-        // console.log("setting avatar " + avatarSkin);
-        updateNameSpace.emit("setAvatarSkin", avatarSkin, socket.id);
-    });
-
-    socket.on("disconnect", () => {
-        console.log(`${socket.id} has disconnected`);
-        connectedSockets.delete(socket.id);
-        updateNameSpace.emit("removePlayer", socket.id);
-    });
-
-    socket.on("initPlayer", (player) => {
-        // console.log(player);
-    });
-
-    socket.on("updatePlayer", (player) => {
-        socket.userData.position.x = player.position.x;
-        socket.userData.position.y = player.position.y;
-        socket.userData.position.z = player.position.z;
-        socket.userData.quaternion.x = player.quaternion[0];
-        socket.userData.quaternion.y = player.quaternion[1];
-        socket.userData.quaternion.z = player.quaternion[2];
-        socket.userData.quaternion.w = player.quaternion[3];
-        socket.userData.animation = player.animation;
-        socket.userData.avatarSkin = player.avatarSkin;
-    });
-
-    setInterval(() => {
-        const playerData = [];
-        for (const socket of connectedSockets.values()) {
-            if (
-                socket.userData.name !== "" &&
-                socket.userData.avatarSkin !== ""
-            ) {
-                playerData.push({
-                    id: socket.id,
-                    name: socket.userData.name,
-                    position_x: socket.userData.position.x,
-                    position_y: socket.userData.position.y,
-                    position_z: socket.userData.position.z,
-                    quaternion_x: socket.userData.quaternion.x,
-                    quaternion_y: socket.userData.quaternion.y,
-                    quaternion_z: socket.userData.quaternion.z,
-                    quaternion_w: socket.userData.quaternion.w,
-                    animation: socket.userData.animation,
-                    avatarSkin: socket.userData.avatarSkin,
-                });
-            }
-        }
-
-        if (socket.userData.name === "" || socket.userData.avatarSkin === "") {
-            return;
-        } else {
-            updateNameSpace.emit("playerData", playerData);
-        }
-    }, 20);
+    updateNameSpace.emit('playerData', playerData);
+  }, 20);
 });
 
-server.listen(port, () => {
-    console.log(`Server listening on port ${port}`);
+// Start the HTTP server
+server.listen(PORT, () => {
+  console.log(`🚀 Server running at http://localhost:${PORT}`);
 });
