@@ -1,3 +1,4 @@
+/*
 import "./index.scss";
 import { io } from "socket.io-client";
 import Experience from "./Experience/Experience.js";
@@ -134,3 +135,51 @@ window.addEventListener("keydown", function (e) {
         }
     }
 });
+
+
+*/
+
+import "./index.scss";
+import { io } from "socket.io-client";
+import Experience from "./Experience/Experience.js";
+import elements from "./Experience/Utils/functions/elements.js";
+
+// DOM Elements
+const domElements = elements({
+    canvas: ".experience-canvas",
+    nameInputButton: "#name-input-button",
+    nameInput: "#name-input",
+    avatarLeftImg: ".avatar-left",
+    avatarRightImg: ".avatar-right",
+});
+
+// Sockets
+const socketUrl = new URL("/", window.location.href);
+const updateSocket = io(socketUrl.toString() + "update");
+let userName = "";
+
+// Experience
+const experience = new Experience(domElements.canvas, updateSocket);
+
+// Event Listeners
+domElements.nameInputButton.addEventListener("click", handleNameSubmit);
+domElements.avatarLeftImg.addEventListener("click", handleCharacterSelectionLeft);
+domElements.avatarRightImg.addEventListener("click", handleCharacterSelectionRight);
+
+// Handlers
+function handleNameSubmit() {
+    userName = domElements.nameInput.value.trim();
+    if (userName === "") return;
+
+    updateSocket.emit("setName", userName);
+}
+
+function handleCharacterSelectionLeft() {
+    updateSocket.emit("setAvatar", "male");
+    domElements.avatarLeftImg.removeEventListener("click", handleCharacterSelectionLeft);
+}
+
+function handleCharacterSelectionRight() {
+    updateSocket.emit("setAvatar", "female");
+    domElements.avatarRightImg.removeEventListener("click", handleCharacterSelectionRight);
+}

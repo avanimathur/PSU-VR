@@ -1,3 +1,4 @@
+<!--
 <!DOCTYPE html>
 <html lang="en">
     <head>
@@ -7,33 +8,14 @@
         <meta name="author" content="Andrew Woan" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <title>PSU VR</title>
-
-        <link
-            rel="apple-touch-icon"
-            sizes="180x180"
-            href="/media/apple-touch-icon.png"
-        />
-        <link
-            rel="icon"
-            type="image/png"
-            sizes="32x32"
-            href="/media/favicon-32x32.png"
-        />
-        <link
-            rel="icon"
-            type="image/png"
-            sizes="16x16"
-            href="/media/favicon-16x16.png"
-        />
         <link rel="manifest" href="/media/site.webmanifest" />
         <meta name="msapplication-TileColor" content="#da532c" />
         <meta name="theme-color" content="#ffffff" />
-      <script type="module" crossorigin src="/assets/index-DlVkZvPO.js"></script>
+      <script type="module" crossorigin src="/assets/index-Dr96uZTc.js"></script>
       <link rel="stylesheet" crossorigin href="/assets/index-BmYT50Ub.css">
     </head>
     <body>
 
-            <!-- Name Enter Screen -->
             <div class="welcome-title">Welcome to PSU VR</div>
             <div class="name-form">
                 <input
@@ -45,7 +27,6 @@
             </div>
             <button id="name-input-button">Continue</button>
 
-            <!-- Ready Player Me Interaction -->
             <div class="character-select-title">Choose your avatar</div>
             <div class="avatar-img-wrapper">
                 <img
@@ -66,48 +47,73 @@
 
         </div>
 
-
-        <!-- Mobile Controls -->
         <div class="joystick-area"></div>
         <div class="control-overlay hidden"></div>
-        <!-- <button class="mobile-chat-button">
-            <svg
-                xmlns="http://www.w3.org/2000/svg"
-                height="40"
-                viewBox="0 96 960 960"
-                width="40"
-            >
-                <path
-                    d="M277.051 644.038h245.462q9.252 0 15.965-6.955 6.714-6.955 6.714-17.27 0-9.877-7.017-16.768-7.017-6.89-16.662-6.89H276.051q-9.82 0-16.512 7.18t-6.692 16.744q0 10.177 6.977 17.068 6.977 6.891 17.227 6.891Zm0-123.923h407.423q9.252 0 15.966-6.955 6.713-6.955 6.713-17.27 0-9.877-7.017-16.768-7.016-6.891-16.662-6.891H276.051q-9.82 0-16.512 7.181-6.692 7.18-6.692 16.743 0 10.178 6.977 17.069 6.977 6.891 17.227 6.891Zm0-123.923h407.423q9.252 0 15.966-6.955 6.713-6.955 6.713-17.27 0-9.877-7.017-16.768-7.016-6.891-16.662-6.891H276.051q-9.82 0-16.512 7.18-6.692 7.181-6.692 16.744 0 10.178 6.977 17.069 6.977 6.891 17.227 6.891ZM104.745 858.383V260.386q0-24.177 17.793-42.146 17.793-17.97 42.314-17.97h630.296q24.168 0 42.138 17.97 17.969 17.969 17.969 42.146v471.228q0 24.177-17.969 42.146-17.97 17.969-42.132 17.969H243.665l-88.087 87.859q-14.321 14.32-32.577 6.609t-18.256-27.814Zm47.883-43.908 70.629-70.629h571.806q5.385 0 8.847-3.461 3.462-3.462 3.462-8.847V260.462q0-5.385-3.462-8.847-3.462-3.461-8.847-3.461H164.937q-5.385 0-8.847 3.461-3.462 3.462-3.462 8.847v554.013Zm0-554.013v-12.308 566.321-554.013Z"
-                />
-            </svg>
-        </button> -->
 
-        <!-- Logo -->
-        <!-- <div class="logo-wrapper"></div> -->
-
-        <!-- Menu -->
-        <!-- <button class="menu-button">
-            <div class="menu-content">
-                <span class="menu-circle"></span>
-                <div class="menu-bar-wrapper">
-                    <span class="menu-bar"></span>
-                    <span class="menu-bar"></span>
-                    <span class="menu-bar"></span>
-                </div>
-            </div>
-        </button> -->
-
-        <!-- Other Ui -->
-
-        <!-- <button class="switch-camera-view"></button> -->
-
-
-        <!-- Experience -->
         <div class="experience-wrapper">
             <canvas class="experience-canvas"></canvas>
         </div>
 
         <script type="module" src="/index.js"></script>
     </body>
+</html>
+
+-->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <link rel="icon" type="image/svg+xml" href="/media/favicon.ico" />
+    <meta name="author" content="Andrew Woan" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>PSU VR</title>
+    <link rel="manifest" href="/media/site.webmanifest" />
+    <meta name="msapplication-TileColor" content="#da532c" />
+    <meta name="theme-color" content="#ffffff" />
+</head>
+<body>
+
+    <!-- Name Enter Screen -->
+    <div class="welcome-title">Welcome to PSU VR</div>
+    <div class="name-form">
+        <input
+            type="text"
+            placeholder="What should we call you?"
+            id="name-input"
+            required
+        />
+    </div>
+    <button id="name-input-button">Continue</button>
+
+    <!-- Avatar Selection -->
+    <div class="character-select-title">Choose your avatar</div>
+    <div class="avatar-img-wrapper">
+        <img
+            src="/images/asian_male_head.png"
+            alt="Male Avatar"
+            class="avatar-img avatar-left"
+        />
+        <img
+            src="/images/asian_female_head.png"
+            alt="Female Avatar"
+            class="avatar-img avatar-right"
+        />
+    </div>
+    <div class="customize-character-btn">
+        Controls: WASD to move | SHIFT to run | SPACE to jump | ENTER to
+        interact | Click/Drag to pan | Middle Mouse to zoom | o to dance
+    </div>
+
+    <!-- Mobile Controls -->
+    <div class="joystick-area"></div>
+    <div class="control-overlay hidden"></div>
+
+    <!-- Experience Canvas -->
+    <div class="experience-wrapper">
+        <canvas class="experience-canvas"></canvas>
+    </div>
+
+</body>
 </html>
